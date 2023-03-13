@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const hostname = '127.0.0.1';
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 
 const server = http.createServer((req, res) => {
   console.log(`Request for ${req.url} received.`);
@@ -20,11 +20,47 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(data);
     });
-  } else if (req.url.match(/\.(css|js|png|jpg|jpeg|gif|ico)$/)) {
+  } else if (req.url === '/meta.html') {
+    const metaPath = path.join(__dirname, 'meta.html');
+
+    fs.readFile(metaPath, (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        return res.end(`Error loading meta.html: ${err}`);
+      }
+
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  } else if (req.url === '/login.html') {
+    const loginPath = path.join(__dirname, 'login.html');
+
+    fs.readFile(loginPath, (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        return res.end(`Error loading login.html: ${err}`);
+      }
+
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  } else if (req.url === '/dashboard.html') {
+    const dashboardPath = path.join(__dirname, 'dashboard.html');
+
+    fs.readFile(dashboardPath, (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        return res.end(`Error loading dashboard.html: ${err}`);
+      }
+
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  } else if (req.url.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
     const filePath = path.join(__dirname, 'public', req.url);
     const extname = path.extname(filePath);
     let contentType = 'text/html';
-
+  
     switch (extname) {
       case '.css':
         contentType = 'text/css';
@@ -45,14 +81,17 @@ const server = http.createServer((req, res) => {
       case '.ico':
         contentType = 'image/x-icon';
         break;
+      case '.svg':
+        contentType = 'image/svg+xml';
+        break;
     }
-
+  
     fs.readFile(filePath, (err, data) => {
       if (err) {
         res.writeHead(500);
         return res.end(`Error loading ${req.url}: ${err}`);
       }
-
+  
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(data);
     });
